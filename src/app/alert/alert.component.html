@@ -1,0 +1,4 @@
+<span *ngFor="let alert of alertService.alerts">
+  <ngb-alert (close)="close(alert)" [type]="alert.type"
+             style="margin-bottom: 0; border-radius: 0">{{ alert.message }}</ngb-alert>
+</span>

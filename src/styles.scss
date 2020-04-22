@@ -1,0 +1,35 @@
+$primary: #191d32 !default;
+$secondary: #ea0a8e !default;
+$success: #248232 !default;
+$warning: #f0a202 !default;
+$danger: #b80c09 !default;
+$info: #60b7e3 !default;
+@import "node_modules/bootstrap/scss/bootstrap";
+
+
+.ngx-file-drop__drop-zone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: initial !important;
+  margin: auto !important;
+  border: none !important;
+  border-radius: 0 !important;
+  z-index: 100;
+}
+
+.ngx-file-drop__content {
+  display: initial !important;
+  align-items: initial !important;
+  justify-content: initial !important;
+  height: initial !important;
+  color: initial !important;
+}
+
+.ngb-toasts {
+  margin-top: .25rem !important;
+  right: 50% !important;
+  transform: translateX(50%);
+}

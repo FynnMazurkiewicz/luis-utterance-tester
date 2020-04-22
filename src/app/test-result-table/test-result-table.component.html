@@ -1,0 +1,168 @@
+<div class="container-fluid" style="margin-top: 10px;">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex align-items-center" style="padding: 10px 0 10px 0;">
+        <span style="width: 180px; line-height: 1">
+          <span class="lead">Utterance Filter</span><br>
+          <span class="text-muted" style="font-size: 12px">You can filter utterances by clicking on buttons on the right.</span>
+        </span>
+        &nbsp;
+        <button (click)="applyFilter(UtteranceFilter.Untested)"
+                [class]="currentFilter === UtteranceFilter.Untested ? 'btn-info' : 'btn-outline-info'"
+                [disabled]="utteranceTestService.isRunning"
+                [ngbTooltip]="getTooltip('These utterances haven\'t been tested yet.')"
+                class="btn"
+                type="button">Untested
+        </button>
+        &nbsp;
+        <button (click)="applyFilter(UtteranceFilter.Success)"
+                [class]="currentFilter === UtteranceFilter.Success ? 'btn-success' : 'btn-outline-success'"
+                [disabled]="utteranceTestService.isRunning"
+                [ngbTooltip]="getTooltip('These utterances work with the current model')"
+                class="btn"
+                type="button">Successfully tested
+        </button>
+        &nbsp;
+        <button (click)="applyFilter(UtteranceFilter.Warning)"
+                [class]="currentFilter === UtteranceFilter.Warning ? 'btn-warning' : 'btn-outline-warning'"
+                [disabled]="utteranceTestService.isRunning"
+                [ngbTooltip]="getTooltip('These utterances were resolved correctly but with a low confidence. Maybe the NLU needs to retrain them.')"
+                class="btn"
+                type="button">
+          Low intent confidence
+        </button>
+        &nbsp;
+        <button (click)="applyFilter(UtteranceFilter.Failed)"
+                [class]="currentFilter === UtteranceFilter.Failed ? 'btn-danger' : 'btn-outline-danger'"
+                [disabled]="utteranceTestService.isRunning"
+                [ngbTooltip]="getTooltip('These utterances currently don\'t work. You either need to adjust them or make a change request to the NLU.')"
+                class="btn"
+                type="button">
+          Intent failed
+        </button>
+        &nbsp;
+        <button (click)="applyFilter(UtteranceFilter.All)" [disabled]="utteranceTestService.isRunning"
+                [hidden]="currentFilter === UtteranceFilter.All"
+                class="btn btn-primary"
+                type="button">Reset filter
+          <img src="/assets/cross.svg"/>
+        </button>
+      </div>
+      <table class="table">
+        <thead>
+        <tr>
+          <th scope="col">TestID</th>
+          <th scope="col">Utterance</th>
+          <th scope="col">Expected Intent</th>
+          <th scope="col">Actual Intent</th>
+          <th scope="col">Score</th>
+        </tr>
+        </thead>
+        <tbody>
+        <td class="col-12 text-center bg-primary" colspan="5">
+          <button (click)="open(content)" *ngIf="allTestCases.concat(newTestCases).length === 0 else elseBlock"
+                  class="btn btn-secondary"
+                  type="button">Load utterances
+          </button>
+          <ng-template #elseBlock>
+            <div class="btn-group">
+              <button (click)="testHandler()" [disabled]="newTestCases.length === 0 || utteranceTestService.isRunning"
+                      [ngbTooltip]="getTooltip(newTestCases.length === 0 ? 'Load new utterances first' : null)"
+                      class="btn btn-secondary"
+                      type="button">
+                Test utterances
+              </button>
+              <button (click)="exportToCSV()" [disabled]="utteranceTestService.isRunning"
+                      [ngbTooltip]="getTooltip(null)"
+                      class="btn btn-primary"
+                      style="background-color:#1b998b; border-color:#1b998b"
+                      type="button">
+                Export to CSV
+              </button>
+              <button (click)="open(content)" class="btn btn-light"
+                      type="button">Load additional utterances
+              </button>
+              <button (click)="clearAll()" [disabled]="utteranceTestService.isRunning" [ngbTooltip]="getTooltip(null)"
+                      class="btn btn-danger"
+                      type="button">Clear
+              </button>
+            </div>
+          </ng-template>
+        </td>
+        <ng-container *ngFor="let testCase of currentTestCases; index as i;">
+          <tr *ngFor="let result of [testCase.result | async];"
+              [class.bg-danger]="result && !result.isSuccess"
+              [class.bg-info]="!result"
+              [class.bg-success]="result && result?.isSuccess"
+              [class.bg-warning]="result && result?.isWarning"
+          >
+            <th scope="row">{{i}}</th>
+            <td style="max-width: 500px"><p class="text-break">{{testCase.utterance}}</p></td>
+            <td><p class="text-break">{{testCase.input.intent}}</p></td>
+            <td><p class="text-break">{{result?.intent}}</p></td>
+            <td><p class="text-break">{{result?.score.toPrecision(3)}}</p></td>
+          </tr>
+        </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Load utterances</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <form>
+      <div class="row">
+        <div class="col">
+          <div class="form-row">
+            <div class="col-12 text-center">
+              <button (click)="utteranceFileInput.click()" class="btn btn-outline-secondary btn-block"
+                      style="margin-top: 10px"
+                      type="button">Upload file
+              </button>
+              <br>
+              <textarea (ngModelChange)="parseUtterances()" [(ngModel)]="utterances" class="form-control"
+                        name="utterances"
+                        placeholder="Or paste utterances here..."
+                        rows="6"></textarea>
+
+            </div>
+          </div>
+          <hr>
+          <div class="form-row">
+            <div class="col">
+              <label for="intent">Expected intent</label>
+              <select [(ngModel)]="selectedIntentIndex" class="form-control" id="intent" name="intent">
+                <option *ngFor="let value of allIntents; let i = index;" [ngValue]="i">{{value}}</option>
+              </select>
+              <input #utteranceFileInput (change)="onFileChange($event)" class="form-control-file" hidden="hidden"
+                     id="exampleFormControlFile1" type="file">
+            </div>
+          </div>
+        </div>
+        <div *ngIf="entities.length > 0" class="col">
+          <div class="form-row">
+            <div class="col">
+              <h1>Fill entities</h1>
+            </div>
+          </div>
+          <div *ngFor="let entity of entities" class="form-row">
+            <div class="col">
+              <label for="entity_{{entity}}">{{entity}}</label>
+              <input class="form-control-file" id='entity_{{entity}}' type="file">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.close('Save click')" class="btn btn-secondary" type="button">Load</button>
+  </div>
+</ng-template>

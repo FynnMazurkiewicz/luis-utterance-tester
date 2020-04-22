@@ -1,0 +1,14 @@
+<nav class="navbar navbar-dark bg-primary justify-content-between">
+  <a class="navbar-brand" href="#">LUIS Utterance Test Tool</a>
+  <form class="form-inline my-2 my-lg-0">
+    <label *ngIf="configModel.environments.length > 1" class="text-light mr-2" for="navbarEnvironment">Umgebung
+      wählen</label>
+    <select (change)="save()" *ngIf="configModel.environments.length > 1"
+            [(ngModel)]="configModel.currentEnvironmentIndex"
+            class="form-control" id="navbarEnvironment" name="navbarEnvironment">
+      <option *ngFor="let environment of configModel.environments; let i = index;"
+              [ngValue]="i">{{environment.name}}</option>
+    </select>
+    <app-settings class="ml-4"></app-settings>
+  </form>
+</nav>
