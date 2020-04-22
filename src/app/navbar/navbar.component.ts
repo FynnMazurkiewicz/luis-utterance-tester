@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Config, ConfigService} from '../../service/config.service';
+// @ts-ignore
+import pjson from '../../../package.json';
 
 @Component({
   selector: 'app-navbar',
@@ -9,6 +11,7 @@ import {Config, ConfigService} from '../../service/config.service';
 export class NavbarComponent implements OnInit {
 
   configModel: Config;
+  pjson = pjson;
 
   constructor(private configService: ConfigService) {
     this.configService.getConfig().subscribe(config => {
