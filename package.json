@@ -10,7 +10,9 @@
     "deploy": "gh-pages -d dist/luis-utterance-tester",
     "test": "ng test",
     "posttest": "npm run lint",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "deploy:patch": "npm version patch && npm run deploy",
+    "deploy:minor": "npm version minor && npm run deploy"
   },
   "private": true,
   "dependencies": {
