@@ -49,7 +49,7 @@ export class ExportService {
   exportConfig(config: Config) {
     const now = new Date();
     const dateString = ('' + now.getFullYear()).slice(-2) + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2);
-    saveAs(new Blob([JSON.stringify(config)], {type: 'application/json'}), dateString + '_luisTool.config.json');
+    saveAs(new Blob([JSON.stringify(config)], {type: 'application/json'}), dateString + '_luisTool.config');
   }
 
 }
