@@ -57,11 +57,6 @@ export class ConfigService {
           this.DID_INIT = true;
         }
       }
-      if (config.environments.length < 1) {
-        this.toastService.error('You can\'t use this tool yet because no environments are loaded. ' +
-          'Please import a configuration by dropping it in this browser window.');
-        this.toggleOverlay(true);
-      }
     });
   }
 

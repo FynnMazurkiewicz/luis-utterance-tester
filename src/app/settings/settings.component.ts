@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {Config, ConfigService} from '../../service/config.service';
 
@@ -7,20 +7,31 @@ import {Config, ConfigService} from '../../service/config.service';
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, AfterViewInit {
+
+
+  @ViewChild('content')
+  private content: TemplateRef<any>;
 
   modalRef: NgbModalRef;
   configModel: Config = null;
   nerdMode = false;
 
   constructor(private modalService: NgbModal, private configService: ConfigService) {
-    this.configService.getConfig().subscribe(config => {
-      this.configModel = config;
-    });
   }
 
   ngOnInit(): void {
   }
+
+  ngAfterViewInit(): void {
+    this.configService.getConfig().subscribe(config => {
+      this.configModel = config;
+      if (this.configModel.environments.length === 0) {
+        this.open();
+      }
+    });
+  }
+
 
   setNerdMode() {
     this.nerdMode = true;
@@ -34,8 +45,8 @@ export class SettingsComponent implements OnInit {
     this.configService.deleteEnvironment();
   }
 
-  open(content) {
-    this.modalRef = this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', beforeDismiss: () => false});
+  open() {
+    this.modalRef = this.modalService.open(this.content, {ariaLabelledBy: 'modal-basic-title', beforeDismiss: () => false});
     this.modalRef.result.then((shouldLoad) => {
       if (shouldLoad) {
         this.configService.loadConfig(this.configModel);
