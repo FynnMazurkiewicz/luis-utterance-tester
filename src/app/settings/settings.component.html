@@ -12,8 +12,19 @@
   <div class="modal-body">
     <div class="row">
       <div class="col">
-        <ngb-alert *ngIf="configModel.environments.length === 0" [dismissible]="false" type="danger">
-          <h4>Read Me</h4>
+        <ngb-alert (close)="closeInfoAlert()" *ngIf="this.firstUse"
+                   style="border-bottom-right-radius: 0; border-bottom-left-radius: 0; margin-bottom: 0;" type="info">
+          <h4>What is this?</h4>
+          <p>
+            This is a browser-local tool for testing utterances against a LUIS. It's a testing client
+            made for designers, testers, managers and programmers with a focus on user friendliness.
+          </p>
+          <p>
+            <b>No data is being sent to our servers.</b>
+          </p>
+        </ngb-alert>
+        <ngb-alert *ngIf="configModel.environments.length === 0"
+                   [dismissible]="false" style="border-top-right-radius: 0; border-top-left-radius: 0;" type="danger">
           Please import a configuration to get started. You probably should have received one from the person who
           linked you to this tool. You can also add a new environment, if you know what you are doing!
         </ngb-alert>
@@ -24,12 +35,14 @@
     <form>
       <div class="row">
         <div class="col text-center">
-          <button (click)="configFileInput.click()" class="btn btn-outline-secondary btn-block" style="margin-top: 10px"
+          <button (click)="configFileInput.click()" class="btn btn-outline-secondary btn-block"
+                  style="margin-top: 10px"
                   type="button">Import configuration file
           </button>
         </div>
         <div *ngIf="configModel.environments.length > 0" class="col text-center">
-          <button (click)="exportConfiguration()" class="btn btn-outline-secondary btn-block" style="margin-top: 10px"
+          <button (click)="exportConfiguration()" class="btn btn-outline-secondary btn-block"
+                  style="margin-top: 10px"
                   type="button">Export configuration file
           </button>
         </div>
@@ -86,7 +99,8 @@
       </div>
       <div class="form-row">
         <div class="col text-center">
-          <button (click)="reset()" *ngIf="configModel.environments.length > 0 else addButton" class="btn btn-danger"
+          <button (click)="reset()" *ngIf="configModel.environments.length > 0 else addButton"
+                  class="btn btn-danger"
                   style="margin-top: 10px"
                   type="button">Reset tool
           </button>
@@ -111,7 +125,7 @@
       <button (click)="setNerdMode()" *ngIf="!nerdMode" class="btn btn-outline-danger" type="button">Edit configurations
       </button>
       &nbsp;
-      <button (click)="modal.close('Save')" class="btn btn-secondary" type="button">Save</button>
+      <button (click)="modal.close('close')" class="btn btn-secondary" type="button">Close</button>
     </div>
   </div>
 </ng-template>

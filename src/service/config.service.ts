@@ -22,11 +22,6 @@ export class ConfigService {
   CONFIG_STORAGE_KEY = 'config';
   CONFIG_VERSION = 1;
   DID_INIT = false;
-  DEFAULT_CONFIG: Config = {
-    version: this.CONFIG_VERSION,
-    environments: [],
-    currentEnvironmentIndex: 0,
-  };
 
   private currentConfig: BehaviorSubject<Config> = new BehaviorSubject<Config>(null);
 
@@ -72,11 +67,21 @@ export class ConfigService {
       name: 'Untitled environment'
     });
     this.currentConfig.value.currentEnvironmentIndex = id - 1;
+    this.loadConfig(this.currentConfig.value);
+  }
+
+  getDefaultConfig() {
+    return {
+      version: this.CONFIG_VERSION,
+      environments: [],
+      currentEnvironmentIndex: 0,
+    };
   }
 
   deleteEnvironment() {
     this.currentConfig.value.environments.splice(this.currentConfig.value.currentEnvironmentIndex, 1);
     this.currentConfig.value.currentEnvironmentIndex = 0;
+    this.loadConfig(this.currentConfig.value);
   }
 
   loadConfigFromFile(ev) {
@@ -118,7 +123,7 @@ export class ConfigService {
     if (cachedConfig) {
       this.loadConfig(cachedConfig);
     } else {
-      this.loadConfig(this.DEFAULT_CONFIG);
+      this.loadConfig(this.getDefaultConfig());
     }
   }
 
@@ -136,6 +141,15 @@ export class ConfigService {
   }
 
   reset() {
-    this.loadConfig(this.DEFAULT_CONFIG);
+    this.loadConfig(this.getDefaultConfig());
+    this.setFirstUse(true);
+  }
+
+  isFirstUse() {
+    return this.storageService.get('isFirstUse', true);
+  }
+
+  setFirstUse(v = false) {
+    return this.storageService.set('isFirstUse', v);
   }
 }

@@ -16,11 +16,13 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   modalRef: NgbModalRef;
   configModel: Config = null;
   nerdMode = false;
+  firstUse = true;
 
   constructor(private modalService: NgbModal, private configService: ConfigService) {
   }
 
   ngOnInit(): void {
+    this.firstUse = this.configService.isFirstUse();
   }
 
   ngAfterViewInit(): void {
@@ -31,7 +33,6 @@ export class SettingsComponent implements OnInit, AfterViewInit {
       }
     });
   }
-
 
   setNerdMode() {
     this.nerdMode = true;
@@ -45,8 +46,13 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     this.configService.deleteEnvironment();
   }
 
+  closeInfoAlert() {
+    this.configService.setFirstUse();
+    this.firstUse = false;
+  }
+
   open() {
-    this.modalRef = this.modalService.open(this.content, {ariaLabelledBy: 'modal-basic-title', beforeDismiss: () => false});
+    this.modalRef = this.modalService.open(this.content, {ariaLabelledBy: 'modal-basic-title', beforeDismiss: () => false, size: 'lg'});
     this.modalRef.result.then((shouldLoad) => {
       if (shouldLoad) {
         this.configService.loadConfig(this.configModel);
@@ -57,6 +63,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
 
   reset() {
     this.configService.reset();
+    this.firstUse = true;
   }
 
   updateIntents(e) {
