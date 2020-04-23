@@ -18,6 +18,9 @@ export function getEntityValue(e: LUISResponseEntity): string {
   if (!e.resolution) {
     return e.entity;
   }
+  if (e.resolution.value) {
+    return e.resolution.value;
+  }
   const value = e.resolution.values[0];
   if (isDateTime(value)) {
     return value.value;
@@ -29,7 +32,8 @@ export interface LUISResponseEntity {
   entity: string;
   type: string;
   resolution: {
-    values: string[] | DateTimeEntity[];
+    value?: string;
+    values?: string[] | DateTimeEntity[];
   };
 }
 
@@ -92,7 +96,6 @@ export class UtteranceTestService {
 
   constructor(private http: HttpClient, private configService: ConfigService) {
     this.reset();
-    this.extractEntities('Schalte MagentaTV [test2] {test} auf {channel}');
   }
 
   public parseToTestInputs(utterances: string, intent: string): TestInput[] {
@@ -170,8 +173,9 @@ export class UtteranceTestService {
         });
       }));
     }), this.CONCURRENCY_COUNT)).subscribe(() => {
-    }, () => {
-
+      console.info('All tests finished.');
+    }, (e) => {
+      console.error(e);
     }, () => {
       this.isRunning = false;
     });
