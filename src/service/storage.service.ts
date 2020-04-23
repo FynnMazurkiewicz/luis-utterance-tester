@@ -16,7 +16,11 @@ export class StorageService {
 
   get(key: string, fallback?: any) {
     try {
-      return JSON.parse(storage.getItem(key));
+      const value = JSON.parse(storage.getItem(key));
+      if (value === null || value === undefined) {
+        return fallback;
+      }
+      return value;
     } catch (e) {
       console.log(e);
       return fallback || undefined;
