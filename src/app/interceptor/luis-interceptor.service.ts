@@ -18,8 +18,8 @@ export class LuisInterceptorService {
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (this.configService.getCurrentEnvironment().luisURL.trim().length === 0
-      || window.location.hostname.match(/localhost/g) && req.method === 'GET' && req.url.match(/luis/g)) {
+    if (this.configService.getCurrentEnvironment().luisURL.trim().length === 0) {
+      console.warn('Using mock data');
       return of(new HttpResponse<LUISResponse>({
         status: 200,
         body: {
