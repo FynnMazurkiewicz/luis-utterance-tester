@@ -57,7 +57,22 @@ export class TestResultTableComponent implements OnInit {
   }
 
   exportToCSV() {
-    this.exportService.exportTests(this.currentTestCases);
+    let fileTag = 'AllUtterances';
+    switch (this.currentFilter) {
+      case UtteranceFilter.Failed:
+        fileTag = 'FailedUtterances';
+        break;
+      case UtteranceFilter.Untested:
+        fileTag = 'UntestedUtterances';
+        break;
+      case UtteranceFilter.Success:
+        fileTag = 'SuccessUtterances';
+        break;
+      case UtteranceFilter.Warning:
+        fileTag = 'LowConfidenceUtterances';
+        break;
+    }
+    this.exportService.exportTests(this.currentTestCases, fileTag);
   }
 
   clearAll() {

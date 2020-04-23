@@ -26,7 +26,7 @@ export class ExportService {
   }
 
 
-  exportTests(tests: PendingTestCase[]) {
+  exportTests(tests: PendingTestCase[], fileTag) {
     Promise.all(tests.map((test, index) => {
       return new Promise(async resolve => {
         test.result.subscribe((result) => {
@@ -42,7 +42,7 @@ export class ExportService {
     })).then(data => {
       const now = new Date();
       const dateString = ('' + now.getFullYear()).slice(-2) + ('0' + (now.getMonth() + 1)).slice(-2) + ('0' + now.getDate()).slice(-2);
-      saveAs(new Blob([this.JSONtoCSV(data)], {type: 'text/csv'}), dateString + '_TestedUtterances.csv');
+      saveAs(new Blob([this.JSONtoCSV(data)], {type: 'text/csv'}), dateString + '_' + fileTag + '.csv');
     });
   }
 
