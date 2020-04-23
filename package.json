@@ -11,8 +11,8 @@
     "test": "ng test",
     "posttest": "npm run lint",
     "lint": "ng lint",
-    "deploy:patch": "npm version patch && npm run deploy",
-    "deploy:minor": "npm version minor && npm run deploy"
+    "patch:deploy": "npm version patch && npm run deploy",
+    "minor:deploy": "npm version minor && npm run deploy"
   },
   "private": true,
   "dependencies": {
