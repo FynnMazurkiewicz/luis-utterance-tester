@@ -67,8 +67,8 @@ export class ConfigService {
   createEnvironment() {
     const id = this.currentConfig.value.environments.push({
       intents: [],
-      luisKey: 'REPLACE_ME',
-      luisURL: 'REPLACE_ME',
+      luisKey: '',
+      luisURL: '',
       name: 'Untitled environment'
     });
     this.currentConfig.value.currentEnvironmentIndex = id - 1;

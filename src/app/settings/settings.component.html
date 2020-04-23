@@ -4,7 +4,7 @@
   <div class="modal-header">
     <h4 class="modal-title"
         id="modal-basic-title">{{ configModel.environments.length > 0 ? 'Configuration' : 'Getting started'}}</h4>
-    <button (click)="modal.close('Cross Click')" *nfIf="configModel.environments.length > 0" aria-label="Close"
+    <button (click)="modal.close('Cross Click')" *ngIf="configModel.environments.length > 0" aria-label="Close"
             class="close" type="button">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -37,12 +37,14 @@
       <hr>
       <div *ngIf="configModel.environments.length > 0" class="form-row">
         <div class="col">
-          <label for="environment">Select your environment</label>
-          <select [(ngModel)]="configModel.currentEnvironmentIndex" class="form-control"
-                  id="environment" name="environment">
-            <option *ngFor="let environment of configModel.environments; let i = index;"
-                    [ngValue]="i">{{environment.name}}</option>
-          </select>
+          <div class="form-group">
+            <label for="environment">Select your environment</label>
+            <select [(ngModel)]="configModel.currentEnvironmentIndex" class="form-control"
+                    id="environment" name="environment">
+              <option *ngFor="let environment of configModel.environments; let i = index;"
+                      [ngValue]="i">{{environment.name}}</option>
+            </select>
+          </div>
         </div>
       </div>
       <div *ngIf="nerdMode && configModel.environments.length > 0" class="form-row">
@@ -59,6 +61,7 @@
             <label for="luisURL">LUIS URL</label>
             <input [(ngModel)]="configModel.environments[configModel.currentEnvironmentIndex].luisURL"
                    class="form-control"
+                   placeholder="Replace with LUIS model URL"
                    id="luisURL"
                    name="luisURL">
           </div>
@@ -66,6 +69,7 @@
             <label for="luisKey">LUIS Key</label>
             <input [(ngModel)]="configModel.environments[configModel.currentEnvironmentIndex].luisKey"
                    class="form-control"
+                   placeholder="Replace with LUIS subscription key"
                    id="luisKey"
                    name="luisKey">
           </div>
@@ -74,6 +78,7 @@
             <input (ngModelChange)="updateIntents($event)"
                    [ngModel]="configModel.environments[configModel.currentEnvironmentIndex].intents"
                    class="form-control"
+                   placeholder="Replace with comma-separated intents"
                    id="intents"
                    name="intents">
           </div>
@@ -86,7 +91,8 @@
                   type="button">Reset tool
           </button>
           <ng-template #addButton>
-            <button (click)="addNewEnv()" class="btn btn-outline-success btn-block" style="margin-top: 10px"
+            <button (click)="addNewEnv(); setNerdMode()" class="btn btn-outline-success btn-block"
+                    style="margin-top: 10px"
                     type="button">Add new environment
             </button>
           </ng-template>
