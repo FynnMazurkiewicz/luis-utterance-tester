@@ -150,7 +150,7 @@ export class UtteranceTestService {
 
     from(testCases).pipe(flatMap(((testCase, index) => {
       return this.resolveUtterance(testCase.utterance).pipe(catchError((e, o) => {
-        this.toastService.error('Failed to test an utterance');
+        this.toastService.error('Failed to test an utterance: ' + e.statusText || 'Unknown error');
         console.log(e, o);
         return of(null);
       }), delay(this.REQUEST_DELAY_MS), map(r => {
