@@ -26,7 +26,7 @@
         <button (click)="applyFilter(UtteranceFilter.Warning)"
                 [class]="currentFilter === UtteranceFilter.Warning ? 'btn-warning' : 'btn-outline-warning'"
                 [disabled]="utteranceTestService.isRunning"
-                [ngbTooltip]="getTooltip('These utterances were resolved correctly but with a low confidence. Maybe the NLU needs to retrain them.')"
+                [ngbTooltip]="getTooltip('These utterances were resolved correctly but with a low confidence. Maybe the NLU needs to retrain them. Confidence threshold is 0.99')"
                 class="btn"
                 type="button">
           Low intent confidence
@@ -126,9 +126,17 @@
                       type="button">Upload file
               </button>
               <br>
-              <textarea (ngModelChange)="parseUtterances()" [(ngModel)]="utterances" class="form-control"
+              <ngb-alert [dismissible]="false"
+                         style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0;"
+                         type="info">
+                Utterances should be split with linebreaks. Make sure that you only have one line per utterances.
+                Empty lines are ignored.
+              </ngb-alert>
+              <textarea (ngModelChange)="parseUtterances()"
+                        [(ngModel)]="utterances" class="form-control"
+                        placeholder="Paste utterances here. Utterances should be split with linebreaks."
                         name="utterances"
-                        placeholder="Or paste utterances here..."
+                        style="border-top-left-radius: 0; border-top-right-radius: 0"
                         rows="6"></textarea>
 
             </div>
