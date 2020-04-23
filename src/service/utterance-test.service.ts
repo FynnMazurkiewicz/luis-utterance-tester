@@ -80,8 +80,8 @@ export interface TestCase {
   providedIn: 'root'
 })
 export class UtteranceTestService {
-  public REQUEST_DELAY_MS = 300;
-  public CONCURRENCY_COUNT = 2;
+  public REQUEST_DELAY_MS = 500;
+  public CONCURRENCY_COUNT = 1;
   public isRunning = false;
   public wasRunning = false;
   public allTestCount = 0;
