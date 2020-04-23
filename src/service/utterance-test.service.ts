@@ -97,6 +97,9 @@ export class UtteranceTestService {
 
   constructor(private http: HttpClient, private configService: ConfigService, private toastService: ToastService) {
     this.reset();
+    if (!this.configService.isFirstUse()) {
+      this.fetchIntents();
+    }
   }
 
   public parseToTestInputs(utterances: string, intent: string): TestInput[] {
@@ -141,6 +144,17 @@ export class UtteranceTestService {
     this.doneSuccessCount = 0;
     this.doneTestCount = 0;
     this.doneWarningCount = 0;
+  }
+
+  fetchIntents() {
+    return this.resolveUtterance('You found an easter egg').pipe(map(value => {
+      this.configService.setIntents(value.intents.map(v => v.intent).filter(intent => intent !== 'None'));
+    })).subscribe(v => {
+      this.toastService.success('Loaded intents from model successfully.');
+    }, error => {
+      this.toastService.error('Failed to load intents, please check your model configuration: ' + error.statusText || '');
+    });
+
   }
 
   test(testCases: PendingTestCase[]): PendingTestCase[] {

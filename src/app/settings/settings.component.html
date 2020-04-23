@@ -52,7 +52,7 @@
         <div class="col">
           <div class="form-group">
             <label for="environment">Select your environment</label>
-            <select [(ngModel)]="configModel.currentEnvironmentIndex" class="form-control"
+            <select (change)="getIntents()" [(ngModel)]="configModel.currentEnvironmentIndex" class="form-control"
                     id="environment" name="environment">
               <option *ngFor="let environment of configModel.environments; let i = index;"
                       [ngValue]="i">{{environment.name}}</option>
@@ -72,7 +72,8 @@
           </div>
           <div class="form-group">
             <label for="luisURL">LUIS URL</label>
-            <input [(ngModel)]="configModel.environments[configModel.currentEnvironmentIndex].luisURL"
+            <input (input)="modalDataChange($event)"
+                   [(ngModel)]="configModel.environments[configModel.currentEnvironmentIndex].luisURL"
                    class="form-control"
                    placeholder="Replace with LUIS model URL"
                    id="luisURL"
@@ -80,7 +81,8 @@
           </div>
           <div class="form-group">
             <label for="luisKey">LUIS Key</label>
-            <input [(ngModel)]="configModel.environments[configModel.currentEnvironmentIndex].luisKey"
+            <input (input)="modalDataChange($event)"
+                   [(ngModel)]="configModel.environments[configModel.currentEnvironmentIndex].luisKey"
                    class="form-control"
                    placeholder="Replace with LUIS subscription key"
                    id="luisKey"
@@ -88,12 +90,13 @@
           </div>
           <div class="form-group">
             <label for="intents">Intents</label>
-            <input (ngModelChange)="updateIntents($event)"
-                   [ngModel]="configModel.environments[configModel.currentEnvironmentIndex].intents"
-                   class="form-control"
-                   placeholder="Replace with comma-separated intents"
-                   id="intents"
-                   name="intents">
+            <input
+              [disabled]="true"
+              [ngModel]="configModel.environments[configModel.currentEnvironmentIndex].intents"
+              class="form-control"
+              id="intents"
+              name="intents"
+              placeholder="Intents load automatically once you entered model url and key.">
           </div>
         </div>
       </div>

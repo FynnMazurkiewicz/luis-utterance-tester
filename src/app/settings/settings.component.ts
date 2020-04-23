@@ -1,6 +1,10 @@
 import {AfterViewInit, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {Config, ConfigService} from '../../service/config.service';
+import {UtteranceTestService} from '../../service/utterance-test.service';
+import {Subject} from 'rxjs';
+import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {ToastService} from '../../service/toast.service';
 
 @Component({
   selector: 'app-settings',
@@ -17,13 +21,60 @@ export class SettingsComponent implements OnInit, AfterViewInit {
   configModel: Config = null;
   nerdMode = false;
   firstUse = true;
+  intentFetchObservable = new Subject<Event>();
 
-  constructor(private modalService: NgbModal, private configService: ConfigService) {
+  constructor(private modalService: NgbModal, private configService: ConfigService, private utteranceTestService: UtteranceTestService,
+              private toastService: ToastService) {
   }
 
   ngOnInit(): void {
+    window.addEventListener('drop', (x) => {
+      this.toggleOverlay(false);
+      this.loadConfigFromFile(x);
+    });
+    window.addEventListener('dragover', (x) => {
+        x.preventDefault();
+        this.toggleOverlay(true);
+        return false;
+      }
+    );
+    window.addEventListener('dragexit', (x) => {
+        x.preventDefault();
+        this.toggleOverlay(false);
+        return false;
+      }
+    );
     this.firstUse = this.configService.isFirstUse();
+    this.intentFetchObservable.pipe(debounceTime(1000), distinctUntilChanged())
+      .subscribe(data => this.getIntents());
   }
+
+  toggleOverlay(show: boolean) {
+    document.getElementById('fileDropOverlay').hidden = !show;
+  }
+
+  loadConfigFromFile(ev) {
+    ev.preventDefault();
+    if (ev.dataTransfer.items) {
+      // Use DataTransferItemList interface to access the file(s)
+      for (const item of ev.dataTransfer.items) {
+        if (item.kind === 'file') {
+          const file = item.getAsFile();
+          file.text().then((configText) => {
+            this.configService.loadConfig(JSON.parse(configText));
+            this.getIntents();
+          }).catch(x => {
+              this.toastService.error('Could not load configuration from file.');
+            }
+          );
+        }
+        // If dropped items aren't files, reject them
+      }
+    } else {
+      this.toastService.error('Your browser is not supported yet.');
+    }
+  }
+
 
   ngAfterViewInit(): void {
     this.configService.getConfig().subscribe(config => {
@@ -66,8 +117,14 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     this.firstUse = true;
   }
 
-  updateIntents(e) {
-    this.configModel.environments[this.configModel.currentEnvironmentIndex].intents = e.split(',');
+  modalDataChange(e) {
+    this.intentFetchObservable.next(e);
+  }
+
+  getIntents() {
+    if (this.configService.getCurrentEnvironment().luisURL && this.configService.getCurrentEnvironment().luisKey) {
+      return this.utteranceTestService.fetchIntents();
+    }
   }
 
   onFileChange(event) {
@@ -77,6 +134,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
       reader.readAsText(file);
       reader.onload = () => {
         this.configService.loadConfigFromString(String(reader.result));
+        this.getIntents();
         this.modalRef.close(false);
       };
     }

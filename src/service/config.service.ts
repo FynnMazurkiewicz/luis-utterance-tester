@@ -26,22 +26,6 @@ export class ConfigService {
   private currentConfig: BehaviorSubject<Config> = new BehaviorSubject<Config>(null);
 
   constructor(private exportService: ExportService, private storageService: StorageService, private toastService: ToastService) {
-    window.addEventListener('drop', (x) => {
-      this.toggleOverlay(false);
-      this.loadConfigFromFile(x);
-    });
-    window.addEventListener('dragover', (x) => {
-        x.preventDefault();
-        this.toggleOverlay(true);
-        return false;
-      }
-    );
-    window.addEventListener('dragexit', (x) => {
-        x.preventDefault();
-        this.toggleOverlay(false);
-        return false;
-      }
-    );
     this.loadConfigFromCache();
     this.currentConfig.subscribe((config) => {
       if (config) {
@@ -53,10 +37,6 @@ export class ConfigService {
         }
       }
     });
-  }
-
-  toggleOverlay(show: boolean) {
-    document.getElementById('fileDropOverlay').hidden = !show;
   }
 
   createEnvironment() {
@@ -84,25 +64,8 @@ export class ConfigService {
     this.loadConfig(this.currentConfig.value);
   }
 
-  loadConfigFromFile(ev) {
-    ev.preventDefault();
-    if (ev.dataTransfer.items) {
-      // Use DataTransferItemList interface to access the file(s)
-      for (const item of ev.dataTransfer.items) {
-        if (item.kind === 'file') {
-          const file = item.getAsFile();
-          file.text().then((configText) => {
-            this.loadConfig(JSON.parse(configText));
-          }).catch(x => {
-              this.toastService.error('Could not load configuration from file.');
-            }
-          );
-        }
-        // If dropped items aren't files, reject them
-      }
-    } else {
-      this.toastService.error('Your browser is not supported yet.');
-    }
+  setIntents(intents) {
+    this.currentConfig.value.environments[this.currentConfig.value.currentEnvironmentIndex].intents = intents;
   }
 
   public loadConfigFromString(configString) {
