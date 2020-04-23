@@ -97,7 +97,7 @@ export class TestResultTableComponent implements OnInit {
   parseUtterances() {
     const testInputs = this.utteranceTestService.parseToTestInputs(this.utterances, this.allIntents[this.selectedIntentIndex]);
     this.entities = Array.from(new Set(testInputs.reduce((p, v) => (p.concat(v.entities)), [])));
-    console.log(this.entities);
+    // TODO Add entity carrier phrase parsing.
   }
 
   applyFilter(filter: UtteranceFilter) {
