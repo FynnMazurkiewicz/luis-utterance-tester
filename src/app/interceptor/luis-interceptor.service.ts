@@ -26,7 +26,13 @@ export class LuisInterceptorService {
             intent: this.intents[Math.floor(Math.random() * this.intents.length)],
             score: Math.random() * (1 - 0.98) + 0.98
           },
-          intents: [],
+          intents: [{
+            intent: 'Mock_Intent_1',
+            score: 1
+          }, {
+            intent: 'Mock_Intent_2',
+            score: 1
+          }],
           entities: [],
           query: ''
         }
