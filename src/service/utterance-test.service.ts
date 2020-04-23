@@ -1,8 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {BehaviorSubject, from, Observable} from 'rxjs';
-import {delay, flatMap, map} from 'rxjs/operators';
+import {BehaviorSubject, from, Observable, of} from 'rxjs';
+import {catchError, delay, flatMap, map} from 'rxjs/operators';
 import {ConfigService} from './config.service';
+import {ToastService} from './toast.service';
 
 interface DateTimeEntity {
   timex: string;
@@ -94,7 +95,7 @@ export class UtteranceTestService {
   public doneFailedCount = 0;
   public doneWarningCount = 0;
 
-  constructor(private http: HttpClient, private configService: ConfigService) {
+  constructor(private http: HttpClient, private configService: ConfigService, private toastService: ToastService) {
     this.reset();
   }
 
@@ -148,7 +149,14 @@ export class UtteranceTestService {
     this.wasRunning = true;
 
     from(testCases).pipe(flatMap(((testCase, index) => {
-      return this.resolveUtterance(testCase.utterance).pipe(delay(this.REQUEST_DELAY_MS), map(r => {
+      return this.resolveUtterance(testCase.utterance).pipe(catchError((e, o) => {
+        this.toastService.error('Failed to test an utterance');
+        console.log(e, o);
+        return of(null);
+      }), delay(this.REQUEST_DELAY_MS), map(r => {
+        if (!r) {
+          return;
+        }
         this.doneTestCount++;
         const isSuccess = r.topScoringIntent.intent === testCase.input.intent;
         const isWarning = r.topScoringIntent.score < 0.99;
@@ -175,6 +183,7 @@ export class UtteranceTestService {
     }), this.CONCURRENCY_COUNT)).subscribe(() => {
       console.info('All tests finished.');
     }, (e) => {
+      this.toastService.error('The test suite crashed unrecoverably. Please export your configuration and utterances and contact a developer.');
       console.error(e);
     }, () => {
       this.isRunning = false;
