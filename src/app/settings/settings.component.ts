@@ -49,6 +49,22 @@ export class SettingsComponent implements OnInit, AfterViewInit {
       .subscribe(data => this.getIntents());
   }
 
+  loadDemoConfig() {
+    this.configService.loadConfig({
+      version: 1,
+      currentEnvironmentIndex: 0,
+      environments: [
+        {
+          luisKey: '',
+          luisURL: '',
+          intents: ['Intent1', 'Intent2', 'Intent3'],
+          name: 'Demo Environment'
+        }
+      ]
+    });
+    this.modalRef.close('democonfig');
+  }
+
   toggleOverlay(show: boolean) {
     document.getElementById('fileDropOverlay').hidden = !show;
   }
@@ -80,7 +96,9 @@ export class SettingsComponent implements OnInit, AfterViewInit {
     this.configService.getConfig().subscribe(config => {
       this.configModel = config;
       if (this.configModel.environments.length === 0) {
-        this.open();
+        if (!this.modalRef) {
+          this.open();
+        }
       }
     });
   }
@@ -108,7 +126,8 @@ export class SettingsComponent implements OnInit, AfterViewInit {
       if (shouldLoad) {
         this.configService.loadConfig(this.configModel);
       }
-    }).catch(() => {
+    }).catch((e) => {
+      console.error(e);
     });
   }
 

@@ -25,8 +25,8 @@
         </ngb-alert>
         <ngb-alert *ngIf="configModel.environments.length === 0"
                    [dismissible]="false" style="border-top-right-radius: 0; border-top-left-radius: 0;" type="danger">
-          Please import a configuration to get started. You probably should have received one from the person who
-          linked you to this tool. You can also add a new environment, if you know what you are doing!
+          Please import a configuration to get started. If you want to try this tool, you can simply load
+          the demo configuration instead. You can also add a new environment, if you know what you are doing!
         </ngb-alert>
       </div>
     </div>
@@ -44,6 +44,14 @@
           <button (click)="exportConfiguration()" class="btn btn-outline-secondary btn-block"
                   style="margin-top: 10px"
                   type="button">Export configuration file
+          </button>
+        </div>
+      </div>
+      <div *ngIf="configModel.environments.length === 0" class="row">
+        <div class="col text-center">
+          <button (click)="loadDemoConfig()" class="btn btn-outline-warning btn-block"
+                  style="margin-top: 10px"
+                  type="button">Load demo configuration
           </button>
         </div>
       </div>
