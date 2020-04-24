@@ -17,7 +17,7 @@ export class ToastService {
   }
 
   error(text: string) {
-    this.show(text, {classname: 'bg-danger text-light px-5', delay: 15000});
+    this.show(text, {classname: 'bg-danger text-light px-5', delay: 5000});
   }
 
 

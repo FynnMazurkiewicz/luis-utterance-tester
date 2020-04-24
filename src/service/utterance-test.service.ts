@@ -147,14 +147,16 @@ export class UtteranceTestService {
   }
 
   fetchIntents() {
-    return this.resolveUtterance('You found an easter egg').pipe(map(value => {
-      this.configService.setIntents(value.intents.map(v => v.intent).filter(intent => intent !== 'None'));
-    })).subscribe(v => {
-      this.toastService.success('Loaded intents from model successfully.');
-    }, error => {
-      this.toastService.error('Failed to load intents, please check your model configuration: ' + error.statusText || '');
-    });
+    if (this.configService.getCurrentEnvironment()) {
+      return this.resolveUtterance('You found an easter egg').pipe(map(value => {
+        this.configService.setIntents(value.intents.map(v => v.intent).filter(intent => intent !== 'None'));
+      })).subscribe(v => {
+        this.toastService.success('Loaded intents from model successfully.');
+      }, error => {
+        this.toastService.error('Failed to load intents, please check your model configuration: ' + error.statusText || '');
+      });
 
+    }
   }
 
   test(testCases: PendingTestCase[]): PendingTestCase[] {
@@ -209,12 +211,15 @@ export class UtteranceTestService {
   }
 
   private resolveUtterance(utterance: string): Observable<LUISResponse> {
-    const config = this.configService.getCurrentEnvironment();
-    const url = config.luisURL;
+    const environment = this.configService.getCurrentEnvironment();
+    if (!environment) {
+      return of(null);
+    }
+    const url = environment.luisURL;
     const params = new HttpParams()
       .set('verbose', 'true')
       .set('timezoneOffset', '0')
-      .set('subscription-key', config.luisKey)
+      .set('subscription-key', environment.luisKey)
       .set('q', utterance);
     return this.http.get<LUISResponse>(url, {params});
   }
