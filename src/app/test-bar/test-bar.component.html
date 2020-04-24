@@ -6,8 +6,7 @@
           <span class="sr-only">Loading...</span>
         </span>
         <ng-template #elseBlock>
-            <img
-              class="text-light" src="assets/check.svg">
+            <img class="align-bottom" src="assets/check.svg">
         </ng-template>
       </span>
       <span>
@@ -15,6 +14,21 @@
           <span class="text-success">{{utteranceTestService.doneSuccessCount}} </span>/
           <span class="text-warning">{{utteranceTestService.doneWarningCount}} </span>/
           <span class="text-danger">{{utteranceTestService.doneFailedCount}} </span>)
+      </span>
+      &nbsp;
+      <span (click)="togglePause()"
+            *ngIf="this.utteranceTestService.isRunning && !this.utteranceTestService.isPaused.getValue()">
+         <button class="btn btn-light" type="button">Pause
+           <img class="align-text-top"
+                src="assets/pause.svg">
+         </button>
+      </span>
+      <span (click)="togglePause()"
+            *ngIf="this.utteranceTestService.isRunning && this.utteranceTestService.isPaused.getValue()">
+         <button class="btn btn-light" type="button">Continue
+           <img class="align-text-top"
+                src="assets/play.svg">
+         </button>
       </span>
     </span>
 

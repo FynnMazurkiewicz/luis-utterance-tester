@@ -9,24 +9,21 @@
         &nbsp;
         <button (click)="applyFilter(UtteranceFilter.Untested)"
                 [class]="currentFilter === UtteranceFilter.Untested ? 'btn-info' : 'btn-outline-info'"
-                [disabled]="utteranceTestService.isRunning"
-                [ngbTooltip]="getTooltip('These utterances haven\'t been tested yet.')"
+                ngbTooltip="getTooltip('These utterances haven't been tested yet."
                 class="btn"
                 type="button">Untested
         </button>
         &nbsp;
         <button (click)="applyFilter(UtteranceFilter.Success)"
                 [class]="currentFilter === UtteranceFilter.Success ? 'btn-success' : 'btn-outline-success'"
-                [disabled]="utteranceTestService.isRunning"
-                [ngbTooltip]="getTooltip('These utterances work with the current model')"
+                ngbTooltip="These utterances work with the current model."
                 class="btn"
                 type="button">Successfully tested
         </button>
         &nbsp;
         <button (click)="applyFilter(UtteranceFilter.Warning)"
                 [class]="currentFilter === UtteranceFilter.Warning ? 'btn-warning' : 'btn-outline-warning'"
-                [disabled]="utteranceTestService.isRunning"
-                [ngbTooltip]="getTooltip('These utterances were resolved correctly but with a low confidence. Maybe the NLU needs to retrain them. Confidence threshold is 0.6')"
+                ngbTooltip="These utterances were resolved correctly but with a low confidence. Maybe the NLU needs to retrain them. Confidence threshold is 0.6')"
                 class="btn"
                 type="button">
           Low intent confidence
@@ -34,14 +31,13 @@
         &nbsp;
         <button (click)="applyFilter(UtteranceFilter.Failed)"
                 [class]="currentFilter === UtteranceFilter.Failed ? 'btn-danger' : 'btn-outline-danger'"
-                [disabled]="utteranceTestService.isRunning"
-                [ngbTooltip]="getTooltip('These utterances currently don\'t work. You either need to adjust them or make a change request to the NLU.')"
+                ngbTooltip="These utterances currently dont work. You either need to adjust them or make a change request to the NLU."
                 class="btn"
                 type="button">
           Intent failed
         </button>
         &nbsp;
-        <button (click)="applyFilter(UtteranceFilter.All)" [disabled]="utteranceTestService.isRunning"
+        <button (click)="applyFilter(UtteranceFilter.All)"
                 [hidden]="currentFilter === UtteranceFilter.All"
                 class="btn btn-primary"
                 type="button">Reset filter
@@ -67,13 +63,14 @@
           <ng-template #elseBlock>
             <div class="btn-group">
               <button (click)="testHandler()" [disabled]="newTestCases.length === 0 || utteranceTestService.isRunning"
-                      [ngbTooltip]="getTooltip(newTestCases.length === 0 ? 'Load new utterances first' : null)"
+                      [ngbTooltip]="getTooltipRunning(newTestCases.length === 0 ? 'Load new utterances first' : null)"
                       class="btn btn-secondary"
                       type="button">
                 Test utterances
               </button>
-              <button (click)="exportToCSV()" [disabled]="utteranceTestService.isRunning"
-                      [ngbTooltip]="getTooltip(null)"
+              <button (click)="exportToCSV()"
+                      [disabled]="utteranceTestService.isRunning && !utteranceTestService.isPaused.getValue()"
+                      [ngbTooltip]="getTooltipPaused(null)"
                       class="btn btn-primary"
                       style="background-color:#1b998b; border-color:#1b998b"
                       type="button">
@@ -82,7 +79,9 @@
               <button (click)="open(content)" class="btn btn-light"
                       type="button">Load additional utterances
               </button>
-              <button (click)="clearAll()" [disabled]="utteranceTestService.isRunning" [ngbTooltip]="getTooltip(null)"
+              <button (click)="clearAll()"
+                      [disabled]="utteranceTestService.isRunning && !utteranceTestService.isPaused.getValue()"
+                      [ngbTooltip]="getTooltipPaused(null)"
                       class="btn btn-danger"
                       type="button">Clear
               </button>
@@ -111,7 +110,7 @@
 <ng-template #content let-modal>
   <div class="modal-header">
     <h4 class="modal-title" id="modal-basic-title">Load utterances</h4>
-    <button (click)="modal.dismiss('Cross click')" aria-label="Close" class="close" type="button">
+    <button (click)="modal.close('Cross click')" aria-label="Close" class="close" type="button">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>

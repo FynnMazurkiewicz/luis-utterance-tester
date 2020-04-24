@@ -1,9 +1,20 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {BehaviorSubject, from, Observable, of} from 'rxjs';
-import {catchError, delay, flatMap, map} from 'rxjs/operators';
+import {catchError, delay, delayWhen, first, flatMap, map, skipWhile} from 'rxjs/operators';
 import {ConfigService} from './config.service';
 import {ToastService} from './toast.service';
+
+
+export function waitFor<T>(signal: Observable<any>) {
+  return (source: Observable<T>) =>
+    new Observable<T>(observer =>
+      signal.pipe(first())
+        .subscribe(_ =>
+          source.subscribe(observer)
+        )
+    );
+}
 
 interface DateTimeEntity {
   timex: string;
@@ -88,6 +99,7 @@ export class UtteranceTestService {
   public REQUEST_DELAY_MS = 500;
   public CONCURRENCY_COUNT = 1;
   public isRunning = false;
+  public isPaused = new BehaviorSubject(false);
   public wasRunning = false;
   public allTestCount = 0;
   public doneTestCount = 0;
@@ -137,6 +149,7 @@ export class UtteranceTestService {
   }
 
   public reset() {
+    this.isPaused.next(false);
     this.isRunning = false;
     this.wasRunning = false;
     this.allTestCount = 0;
@@ -159,49 +172,62 @@ export class UtteranceTestService {
     }
   }
 
+  setPause(v?: boolean) {
+
+    this.isPaused.next(v || !this.isPaused.getValue());
+  }
+
   test(testCases: PendingTestCase[]): PendingTestCase[] {
     this.allTestCount += testCases.length;
     this.isRunning = true;
     this.wasRunning = true;
 
     from(testCases).pipe(flatMap(((testCase, index) => {
-      return this.resolveUtterance(testCase.utterance).pipe(catchError((e, o) => {
-        this.toastService.error('Failed to test an utterance: ' + e.statusText || 'Unknown error');
-        console.log(e, o);
+      if (!this.isRunning) {
         return of(null);
-      }), delay(this.REQUEST_DELAY_MS), map(r => {
-        if (!r) {
-          return;
-        }
-        this.doneTestCount++;
-        const isSuccess = r.topScoringIntent.intent === testCase.input.intent;
-        const isWarning = r.topScoringIntent.score < ConfigService.CONFIDENCE_THRESHOLD;
-        if (!isSuccess) {
-          this.doneFailedCount++;
-        } else if (isWarning) {
-          this.doneWarningCount++;
-        } else {
-          this.doneSuccessCount++;
-        }
+      }
+      return this.resolveUtterance(testCase.utterance).pipe(
+        catchError((e, o) => {
+          this.toastService.error('Failed to test an utterance: ' + e.statusText || 'Unknown error');
+          console.log(e, o);
+          return of(null);
+        }),
+        delay(this.REQUEST_DELAY_MS),
+        delayWhen(() => this.isPaused.pipe(skipWhile(x => x === true))),
+        map(r => {
+          if (!r || !this.isRunning) {
+            return;
+          }
+          this.doneTestCount++;
+          const isSuccess = r.topScoringIntent.intent === testCase.input.intent;
+          const isWarning = r.topScoringIntent.score < ConfigService.CONFIDENCE_THRESHOLD;
+          if (!isSuccess) {
+            this.doneFailedCount++;
+          } else if (isWarning) {
+            this.doneWarningCount++;
+          } else {
+            this.doneSuccessCount++;
+          }
 
-        testCase.result.next({
-          intent: r.topScoringIntent.intent,
-          score: r.topScoringIntent.score,
-          entities: r.entities.map(e => ({
-            literal: e.entity,
-            type: e.type,
-            value: getEntityValue(e)
-          })),
-          isSuccess,
-          isWarning
-        });
-      }));
+
+          testCase.result.next({
+            intent: r.topScoringIntent.intent,
+            score: r.topScoringIntent.score,
+            entities: r.entities.map(e => ({
+              literal: e.entity,
+              type: e.type,
+              value: getEntityValue(e)
+            })),
+            isSuccess,
+            isWarning
+          });
+        }));
     }), this.CONCURRENCY_COUNT)).subscribe(() => {
-      console.info('All tests finished.');
     }, (e) => {
       this.toastService.error('The test suite crashed unrecoverably. Please export your configuration and utterances and contact a developer.');
       console.error(e);
     }, () => {
+      console.info('All tests finished.');
       this.isRunning = false;
     });
 

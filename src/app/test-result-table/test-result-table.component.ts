@@ -85,7 +85,7 @@ export class TestResultTableComponent implements OnInit {
 
   open(content) {
     this.utterances = '';
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'xl'}).result.then(() => {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'xl', beforeDismiss: () => false}).result.then(() => {
       const loadedUtterances = this.utteranceTestService.load(this.utterances, this.allIntents[this.selectedIntentIndex]);
       this.newTestCases = this.newTestCases.concat(loadedUtterances);
       this.allTestCases = this.allTestCases.concat(loadedUtterances);
@@ -121,8 +121,13 @@ export class TestResultTableComponent implements OnInit {
     });
   }
 
-  getTooltip(text) {
-    return this.utteranceTestService.isRunning ? 'Not available while tests are running' : text;
+  getTooltipRunning(text) {
+    return this.utteranceTestService.isRunning ? 'Not available while tests are running.' : text;
+  }
+
+  getTooltipPaused(text) {
+    return this.utteranceTestService.isRunning && !this.utteranceTestService.isPaused.getValue()
+      ? 'Pause testing to use this function.' : text;
   }
 
   ngOnInit(): void {

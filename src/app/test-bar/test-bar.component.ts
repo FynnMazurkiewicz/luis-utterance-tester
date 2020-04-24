@@ -14,4 +14,8 @@ export class TestBarComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  togglePause() {
+    this.utteranceTestService.setPause();
+  }
+
 }
