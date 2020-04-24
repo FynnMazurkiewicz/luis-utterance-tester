@@ -175,7 +175,7 @@ export class UtteranceTestService {
         }
         this.doneTestCount++;
         const isSuccess = r.topScoringIntent.intent === testCase.input.intent;
-        const isWarning = r.topScoringIntent.score < 0.99;
+        const isWarning = r.topScoringIntent.score < ConfigService.CONFIDENCE_THRESHOLD;
         if (!isSuccess) {
           this.doneFailedCount++;
         } else if (isWarning) {

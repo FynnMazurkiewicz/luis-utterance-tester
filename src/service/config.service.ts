@@ -19,6 +19,8 @@ export interface Config {
   providedIn: 'root'
 })
 export class ConfigService {
+  static CONFIDENCE_THRESHOLD = 0.6;
+
   CONFIG_STORAGE_KEY = 'config';
   CONFIG_VERSION = 1;
   DID_INIT = false;
