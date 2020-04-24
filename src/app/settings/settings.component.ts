@@ -57,7 +57,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
         {
           luisKey: '',
           luisURL: '',
-          intents: ['Intent1', 'Intent2', 'Intent3'],
+          intents: ['DemoIntent1', 'DemoIntent2', 'DemoIntent3'],
           name: 'Demo Environment'
         }
       ]
