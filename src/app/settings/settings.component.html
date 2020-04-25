@@ -14,14 +14,24 @@
       <div class="col">
         <ngb-alert (close)="closeInfoAlert()" *ngIf="this.firstUse"
                    style="border-bottom-right-radius: 0; border-bottom-left-radius: 0; margin-bottom: 0;" type="info">
-          <h4>What is this?</h4>
-          <p>
-            This is a browser-local tool for testing utterances against Microsoft LUIS. It's a testing client
-            made for designers, testers, managers and programmers with a focus on user friendliness.
-          </p>
-          <p>
-            <b>No data is being sent to our servers.</b>
-          </p>
+          <div class="row">
+            <div class="col-12 col-lg-4">
+              <h4>What is this?</h4>
+              <p>
+                This is a browser-local tool for testing utterances against Microsoft LUIS. It's a testing client
+                made for designers, testers, managers and programmers with a focus on user friendliness.
+              </p>
+              <p>
+                <b>No data is being sent to our servers.</b>
+              </p>
+            </div>
+            <div class="d-none d-lg-flex col-8">
+              <div class="embed-responsive embed-responsive-16by9 d-flex align-self-center">
+                <video class="embed-responsive-item" controls poster="assets/introduction_poster.png"
+                       src="assets/introduction.webm"></video>
+              </div>
+            </div>
+          </div>
         </ngb-alert>
         <ngb-alert *ngIf="configModel.environments.length === 0"
                    [dismissible]="false" style="border-top-right-radius: 0; border-top-left-radius: 0;" type="danger">
