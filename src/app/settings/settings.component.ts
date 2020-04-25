@@ -62,7 +62,7 @@ export class SettingsComponent implements OnInit, AfterViewInit {
         }
       ]
     });
-    this.modalRef.close('democonfig');
+    this.modalRef.close(false);
   }
 
   toggleOverlay(show: boolean) {
