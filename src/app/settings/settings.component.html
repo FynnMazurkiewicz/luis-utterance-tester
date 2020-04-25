@@ -15,7 +15,7 @@
         <ngb-alert (close)="closeInfoAlert()" *ngIf="this.firstUse"
                    style="border-bottom-right-radius: 0; border-bottom-left-radius: 0; margin-bottom: 0;" type="info">
           <div class="row">
-            <div class="col-12 col-lg-4">
+            <div class="col-12 col-lg-6">
               <h4>What is this?</h4>
               <p>
                 This is a browser-local tool for testing utterances against Microsoft LUIS. It's a testing client
@@ -25,7 +25,7 @@
                 <b>No data is being sent to our servers.</b>
               </p>
             </div>
-            <div class="d-none d-lg-flex col-8">
+            <div class="d-none d-lg-flex col-6">
               <div class="embed-responsive embed-responsive-16by9 d-flex align-self-center">
                 <video class="embed-responsive-item" controls poster="assets/introduction_poster.png"
                        src="assets/introduction.webm"></video>
