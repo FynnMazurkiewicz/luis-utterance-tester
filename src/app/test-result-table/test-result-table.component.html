@@ -56,7 +56,7 @@
         </thead>
         <tbody>
         <td class="col-12 text-center bg-primary" colspan="5">
-          <button (click)="open(content)" *ngIf="allTestCases.concat(newTestCases).length === 0 else elseBlock"
+          <button (click)="openLoadModal()" *ngIf="allTestCases.concat(newTestCases).length === 0 else elseBlock"
                   class="btn btn-secondary"
                   type="button">Load utterances
           </button>
@@ -76,7 +76,7 @@
                       type="button">
                 Export to CSV
               </button>
-              <button (click)="open(content)" class="btn btn-light"
+              <button (click)="openLoadModal()" class="btn btn-light"
                       type="button">Load additional utterances
               </button>
               <button (click)="clearAll()"
@@ -107,69 +107,3 @@
     </div>
   </div>
 </div>
-<ng-template #content let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">Load utterances</h4>
-    <button (click)="modal.close('Cross click')" aria-label="Close" class="close" type="button">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <form>
-      <div class="row">
-        <div class="col">
-          <div class="form-row">
-            <div class="col-12 text-center">
-              <button (click)="utteranceFileInput.click()" class="btn btn-outline-secondary btn-block"
-                      style="margin-top: 10px"
-                      type="button">Upload file
-              </button>
-              <br>
-              <ngb-alert [dismissible]="false"
-                         style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0;"
-                         type="info">
-                Utterances should be split with linebreaks. Make sure that you only have one line per utterances.
-                Empty lines are ignored.
-              </ngb-alert>
-              <textarea (ngModelChange)="parseUtterances()"
-                        [(ngModel)]="utterances" class="form-control"
-                        placeholder="Paste utterances here. Utterances should be split with linebreaks."
-                        name="utterances"
-                        style="border-top-left-radius: 0; border-top-right-radius: 0"
-                        rows="6"></textarea>
-
-            </div>
-          </div>
-          <hr>
-          <div class="form-row">
-            <div class="col">
-              <label for="intent">Expected intent</label>
-              <select [(ngModel)]="selectedIntentIndex" class="form-control" id="intent" name="intent">
-                <option *ngFor="let value of allIntents; let i = index;" [ngValue]="i">{{value}}</option>
-              </select>
-              <input #utteranceFileInput (change)="onFileChange($event)" class="form-control-file" hidden="hidden"
-                     id="exampleFormControlFile1" type="file">
-            </div>
-          </div>
-        </div>
-        <div *ngIf="entities.length > 0" class="col">
-          <div class="form-row">
-            <div class="col">
-              <h1>Fill entities</h1>
-            </div>
-          </div>
-          <div *ngFor="let entity of entities" class="form-row">
-            <div class="col">
-              <label for="entity_{{entity}}">{{entity}}</label>
-              <input class="form-control-file" id='entity_{{entity}}' type="file">
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </form>
-  </div>
-  <div class="modal-footer">
-    <button (click)="modal.close('Save click')" class="btn btn-secondary" type="button">Load</button>
-  </div>
-</ng-template>

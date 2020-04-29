@@ -114,9 +114,8 @@ export class UtteranceTestService {
     }
   }
 
-  public parseToTestInputs(utterances: string, intent: string): TestInput[] {
-    return utterances.replace(/['"]/g, '')
-      .split('\n')
+  public parseToTestInputs(utterances: string[], intent: string): TestInput[] {
+    return utterances.map(u => u.replace(/['"]/g, ''))
       .map(line => line.trim())
       .filter(line => !!line)
       .map(utterance => {
@@ -143,7 +142,7 @@ export class UtteranceTestService {
     }));
   }
 
-  load(utteranceString: string, intent: string): PendingTestCase[] {
+  load(utteranceString: string[], intent: string): PendingTestCase[] {
     return this.parseToTestInputs(utteranceString, intent)
       .map(input => this.getPendingTestCase(input, new BehaviorSubject<TestResult>(null)));
   }
@@ -260,7 +259,7 @@ export class UtteranceTestService {
 
   private extractEntities(utteranceString: string): string[] {
     // @ts-ignore
-    return [...utteranceString.matchAll(/\[(\w+?)\]|\{(\w+?)\}/g)].reduce((p, v) => {
+    return [...utteranceString.matchAll(/\[(\w+?)\]/g)].reduce((p, v) => {
       p.push(v.slice(1, 3).filter(x => x !== undefined)[0]);
       return p;
     }, []);

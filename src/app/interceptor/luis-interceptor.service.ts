@@ -24,7 +24,8 @@ export class LuisInterceptorService {
         body: {
           topScoringIntent: {
             intent: this.intents[Math.floor(Math.random() * this.intents.length)],
-            score: Math.random() * (1 - (ConfigService.CONFIDENCE_THRESHOLD - ConfigService.CONFIDENCE_THRESHOLD / 3)) + (ConfigService.CONFIDENCE_THRESHOLD - ConfigService.CONFIDENCE_THRESHOLD / 3)
+            score: Math.random() * (1 - (ConfigService.CONFIDENCE_THRESHOLD - ConfigService.CONFIDENCE_THRESHOLD / 3))
+              + (ConfigService.CONFIDENCE_THRESHOLD - ConfigService.CONFIDENCE_THRESHOLD / 3)
           },
           intents: [{
             intent: 'Mock_Intent_1',

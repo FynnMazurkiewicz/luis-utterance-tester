@@ -1,0 +1,99 @@
+<div>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Load utterances</h4>
+    <button (click)="ngbActiveModal.dismiss()" aria-label="Close" class="close" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <app-alert></app-alert>
+    <form>
+      <div class="row">
+        <div class="col">
+          <div class="form-row">
+            <div class="col-12 text-center">
+              <button (click)="utteranceFileInput.click()" class="btn btn-outline-secondary btn-block"
+                      style="margin-top: 10px"
+                      type="button">Upload file
+              </button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="entities.length > 0" class="col">
+          <div class="form-row">
+            <div class="col">
+              <h1>Fill entities</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col">
+          <ngb-alert [dismissible]="false"
+                     style="border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0;"
+                     type="info">
+            Utterances should be split with linebreaks. Make sure that you only have one line per utterances.
+            Empty lines are ignored.
+          </ngb-alert>
+          <textarea (input)="parseUtterances()"
+                    [(ngModel)]="carrierPhrasesString" class="form-control"
+                    name="utterances"
+                    placeholder="Paste utterances here. Utterances should be split with linebreaks."
+                    rows="6"
+                    style="border-top-left-radius: 0; border-top-right-radius: 0"></textarea>
+        </div>
+        <div *ngIf="entities.length > 0" class="col">
+          <div *ngFor="let entity of entities" class="form-row mb-2">
+            <div class="col">
+              <div class="row">
+                <div class="col">
+                  <div *ngIf="entityFiles[entity].length > 0 else showMissing" class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">[{{entity}}]</span>
+                    </div>
+                    <select class="form-control">
+                      <option
+                        *ngFor="let entityValue of entityFiles[entity].slice(0, entityLimit)">{{entityValue}}</option>
+                    </select>
+                    <div (click)="clearEntityValue(entity); entityInput.value = ''" class="input-group-append">
+                      <label class="btn input-group-text">&times;</label>
+                    </div>
+                  </div>
+                  <ng-template #showMissing>
+                    <button (click)="entityInput.click()" class="btn btn-outline-secondary btn-block"
+                            type="button">Load value for [{{entity}}]
+                    </button>
+                  </ng-template>
+                </div>
+              </div>
+              <input #entityInput (change)="onEntityFileChange($event, entity)" class="form-control-file"
+                     hidden="hidden" id='entity_{{entity}}' type="file">
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div class="form-row">
+        <div class="col">
+          <label for="intent">Expected intent</label>
+          <select [(ngModel)]="selectedIntentIndex" class="form-control" id="intent" name="intent">
+            <option *ngFor="let value of allIntents; let i = index;" [ngValue]="i">{{value}}</option>
+          </select>
+          <input #utteranceFileInput (change)="onFileChange($event); utteranceFileInput.value = ''"
+                 class="form-control-file" hidden="hidden" type="file">
+        </div>
+        <div *ngIf="entities.length > 0" class="col">
+          <label for="intent">Limit entity set:</label>
+          <input (input)="updateUtteranceCount()" [(ngModel)]="entityLimit" class="form-control"
+                 id="numberOfUtterances" name="numberOfUtterances"
+                 type="number"/>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button (click)="loadAndClose()" [disabled]="!isComplete" class="btn btn-secondary" type="button">
+      Load {{utteranceCount}} utterances
+    </button>
+  </div>
+</div>

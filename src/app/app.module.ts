@@ -12,6 +12,7 @@ import {AlertComponent} from './alert/alert.component';
 import {TestBarComponent} from './test-bar/test-bar.component';
 import {TestResultTableComponent} from './test-result-table/test-result-table.component';
 import {SettingsComponent} from './settings/settings.component';
+import {LoadTestsModalComponent} from './load-tests-modal/load-tests-modal.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import {SettingsComponent} from './settings/settings.component';
     TestBarComponent,
     TestResultTableComponent,
     SettingsComponent,
+    LoadTestsModalComponent,
   ],
   imports: [
     BrowserModule,

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {PendingTestCase, UtteranceTestService} from '../../service/utterance-test.service';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ExportService} from '../../service/export.service';
-import {ConfigService} from '../../service/config.service';
+import {LoadTestsModalComponent} from '../load-tests-modal/load-tests-modal.component';
 
 enum UtteranceFilter {
   All = 1,
@@ -19,11 +19,6 @@ enum UtteranceFilter {
 })
 export class TestResultTableComponent implements OnInit {
 
-  utterances = '';
-  entities = [];
-
-  allIntents = [];
-  selectedIntentIndex = 0;
   currentFilter = UtteranceFilter.All;
   allTestCases: PendingTestCase[] = [];
   currentTestCases: PendingTestCase[] = [];
@@ -31,13 +26,7 @@ export class TestResultTableComponent implements OnInit {
 
   public UtteranceFilter = UtteranceFilter;
 
-  constructor(private modalService: NgbModal, public utteranceTestService: UtteranceTestService, private exportService: ExportService,
-              private configService: ConfigService) {
-    this.configService.getConfig().subscribe(config => {
-      if (config && config.environments.length > 0) {
-        this.allIntents = config.environments[config.currentEnvironmentIndex].intents;
-      }
-    });
+  constructor(private modalService: NgbModal, public utteranceTestService: UtteranceTestService, private exportService: ExportService) {
   }
 
   testHandler() {
@@ -45,16 +34,6 @@ export class TestResultTableComponent implements OnInit {
     this.newTestCases = [];
   }
 
-  onFileChange(event) {
-    const reader = new FileReader();
-    if (event.target.files && event.target.files.length) {
-      const [file] = event.target.files;
-      reader.readAsText(file);
-      reader.onload = () => {
-        this.utterances = String(reader.result);
-      };
-    }
-  }
 
   exportToCSV() {
     let fileTag = 'AllUtterances';
@@ -83,21 +62,16 @@ export class TestResultTableComponent implements OnInit {
     this.applyFilter(UtteranceFilter.All);
   }
 
-  open(content) {
-    this.utterances = '';
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', size: 'xl', beforeDismiss: () => false}).result.then(() => {
-      const loadedUtterances = this.utteranceTestService.load(this.utterances, this.allIntents[this.selectedIntentIndex]);
+  openLoadModal() {
+    this.modalService.open(LoadTestsModalComponent, {
+      ariaLabelledBy: 'Load Utterances Modal',
+      size: 'xl',
+    }).result.then((loadedUtterances: PendingTestCase[]) => {
       this.newTestCases = this.newTestCases.concat(loadedUtterances);
       this.allTestCases = this.allTestCases.concat(loadedUtterances);
       this.applyFilter(UtteranceFilter.All);
     }).catch(() => {
     });
-  }
-
-  parseUtterances() {
-    const testInputs = this.utteranceTestService.parseToTestInputs(this.utterances, this.allIntents[this.selectedIntentIndex]);
-    this.entities = Array.from(new Set(testInputs.reduce((p, v) => (p.concat(v.entities)), [])));
-    // TODO Add entity carrier phrase parsing.
   }
 
   applyFilter(filter: UtteranceFilter) {
