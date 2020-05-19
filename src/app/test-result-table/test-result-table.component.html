@@ -23,7 +23,7 @@
         &nbsp;
         <button (click)="applyFilter(UtteranceFilter.Warning)"
                 [class]="currentFilter === UtteranceFilter.Warning ? 'btn-warning' : 'btn-outline-warning'"
-                ngbTooltip="These utterances were resolved correctly but with a low confidence. Maybe the NLU needs to retrain them. Confidence threshold is 0.6')"
+                ngbTooltip="These utterances were resolved correctly but with a low confidence. Maybe the NLU needs to retrain them. Confidence threshold is 0.6"
                 class="btn"
                 type="button">
           Low intent confidence
@@ -51,7 +51,7 @@
           <th scope="col">Utterance</th>
           <th scope="col">Expected Intent</th>
           <th scope="col">Actual Intent</th>
-          <th scope="col">Score</th>
+          <th scope="col">Actual Score</th>
         </tr>
         </thead>
         <tbody>
