@@ -35,9 +35,9 @@ export class TestResultTableComponent implements OnInit {
   }
 
   retestHandler() {
-    this.newTestCases = this.allTestCases;
     this.utteranceTestService.reset();
-    this.utteranceTestService.test(this.newTestCases);
+    this.newTestCases = this.allTestCases;
+    this.testHandler();
   }
 
   exportToCSV() {
