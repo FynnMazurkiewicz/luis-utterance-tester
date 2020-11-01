@@ -62,11 +62,18 @@
           </button>
           <ng-template #elseBlock>
             <div class="btn-group">
+              <button (click)="retestHandler()"
+                      [disabled]="utteranceTestService.isRunning || utteranceTestService.doneTestCount == 0"
+                      [ngbTooltip]="getTooltipRunning(null)"
+                      class="btn btn-secondary"
+                      type="button">
+                Test all utterances
+              </button>
               <button (click)="testHandler()" [disabled]="newTestCases.length === 0 || utteranceTestService.isRunning"
                       [ngbTooltip]="getTooltipRunning(newTestCases.length === 0 ? 'Load new utterances first' : null)"
                       class="btn btn-secondary"
                       type="button">
-                Test utterances
+                Test new utterances
               </button>
               <button (click)="exportToCSV()"
                       [disabled]="utteranceTestService.isRunning && !utteranceTestService.isPaused.getValue()"

@@ -34,6 +34,11 @@ export class TestResultTableComponent implements OnInit {
     this.newTestCases = [];
   }
 
+  retestHandler() {
+    this.newTestCases = this.allTestCases;
+    this.utteranceTestService.reset();
+    this.utteranceTestService.test(this.newTestCases);
+  }
 
   exportToCSV() {
     let fileTag = 'AllUtterances';
