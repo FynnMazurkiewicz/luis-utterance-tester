@@ -1,6 +1,6 @@
 {
   "name": "luis-utterance-tester",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "homepage": ".",
   "scripts": {
     "ng": "ng",
