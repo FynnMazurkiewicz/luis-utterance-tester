@@ -245,7 +245,7 @@ export class UtteranceTestService {
       .set('verbose', 'true')
       .set('timezoneOffset', '0')
       .set('subscription-key', environment.luisKey)
-      .set('q', utterance);
+      .set('q', encodeURIComponent(utterance));
     return this.http.get<LUISResponse>(url, {params});
   }
 
